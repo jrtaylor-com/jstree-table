@@ -29,7 +29,7 @@
 			return (id||"").replace(IDREGEX,'\\$&');
 		}, NODE_DATA_ATTR = "data-jstreetable", COL_DATA_ATTR = "data-jstreetable-column",
 	SPECIAL_TITLE = "_DATA_", LEVELINDENT = 24, styled = false, TABLECELLID_PREFIX = "jstable_",TABLECELLID_POSTFIX = "_col",
-		MINCOLWIDTH = 10,
+		MINCOLWIDTH = 45,
 		findDataCell = function (from,id) {
 			return from.find("div["+NODE_DATA_ATTR+'="'+ escapeId(id) +'"]');
 		},
@@ -369,7 +369,7 @@
 				var me = this;
 				function resize() {
 					// find the line-height of the first known node
-					var anchorHeight = me.element.find(".jstree-leaf").outerHeight() || 24;
+					var anchorHeight = (me.element) ? me.element.find(".jstree-node").eq(0).outerHeight() : 24;
 
 					// resize the hover/ focus highlight
 					var tableWidth = $('.jstree-table-midwrapper').width();
@@ -384,7 +384,7 @@
 				resize();
 
 				// resize column headers
-				this.autosize_all_columns();
+				this.autosize_all_columns(); 
 
 				// resize rows on zoom
 				$(window).on('resize', resize);
@@ -515,6 +515,7 @@
 				col = this.headerWrapper;
 				last = $("<div></div>").css(conf).addClass("jstree-table-div-"+this.uniq+"-"+i+" "+(tr?"ui-widget-header ":"")+" jstree-table-header jstree-table-header-cell jstree-table-header-"+classAdd+" "+cl+" "+ccl).html(val);
 				last.addClass((tr?"ui-widget-header ":"")+"jstree-table-header jstree-table-header-"+classAdd);
+                last.width(width);
 				last.appendTo(col);
 
 				if (name) {
@@ -856,6 +857,14 @@
 					newWidth = width;
 				}
 			});
+
+            /*Column width not getting applied on jstree table plugin*/
+			var index = col.parent().children().index(col);
+			var headerCol = $('.jstree-table-headerwrapper>div').eq(index);
+			var headerWidth =  headerCol.width();
+			if (headerWidth > newWidth) {
+				newWidth = headerWidth;
+			}
 
 			diff = newWidth-oldPrevColWidth;
 
